@@ -197,24 +197,6 @@ bool unique_value(int *arr, int n, int x) {
 }
 
 int main() {
-    Bst tree;
-    int root = pow(2, 15) / 2;
-    int max = pow(2, 15) - 1;
-    vector<int> arr;
-    arr.push_back(root);
-    tree.insert(root);
-    for (int i = 1; i < 5000; i++) {
-        int r = rand() % max;
-        while (!unique_value(arr.data(), arr.size(), r)) {
-            r = rand() % max;
-        }
-        tree.insert(r);
-        arr.push_back(r);
-    }
-
-    //tree.print();
-    //tree.saveDotFile("bst_snapshot.dot");
-
     Bst tree2;
     tree2.insert(10);
     tree2.insert(5);
@@ -224,5 +206,4 @@ int main() {
     tree2.insert(20);
     tree2.print();
     cout << "Internal Path Length: " << tree2.ipl() << endl;
-
 }
