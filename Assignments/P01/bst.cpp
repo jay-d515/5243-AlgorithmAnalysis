@@ -1,3 +1,4 @@
+#include <cmath>
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -91,6 +92,64 @@ class Bst {
         return depth + _ipl(root->left, depth + 1) + _ipl(root->right, depth + 1);
     }
 
+    Node* _findMin(Node *subroot){
+        while (subroot && subroot->left){
+            subroot = subroot->left;
+        }
+        return subroot;
+    }
+
+    void _delete(Node *&subroot, int x){
+        // Case 1: Empty tree or value not found
+        if (!subroot){
+            return;
+        }
+
+        // Traverse the tree to find the node to delete
+        if (x < subroot->data){
+            _delete(subroot->left, x);
+        }
+        else if (x > subroot->data){
+            _delete(subroot->right, x);
+        }
+        else {
+            // Node found
+
+            // Case 2: Leaf node
+            if (!subroot->left && !subroot->right){
+                delete subroot;
+                subroot = nullptr;
+            }
+
+            // Case 3: One child on the right
+            else if (!subroot->left){
+                Node *temp = subroot;
+                subroot = subroot->right;
+                delete temp;
+            }
+
+            // Case 4: One child on the left
+            else if (!subroot->right){
+                Node *temp = subroot;
+                subroot = subroot->left;
+                delete temp;
+            }
+
+            // Case 5: Two children
+            else {
+                // Find the inorder successor (minimum in the right subtree)
+                Node *successor = _findMin(subroot->right);
+
+                // Copy the successor's value to the current node
+                subroot->data = successor->data;
+
+                // Delete the successor node
+                _delete(subroot->right, successor->data);
+            }
+        }
+
+    }
+
 public:
     Bst() { root = nullptr; }
     void insert(int x) { _insert(root, x); }
@@ -100,6 +159,7 @@ public:
         std::string dotContent = GraphvizBST::generateDot(root);
         GraphvizBST::saveDotFile(filename, dotContent);
     }
+    void remove(int x) { _delete(root, x); }
 
     /**
      * Computes the Internal Path Length (IPL) of a Binary Search Tree (BST).
@@ -152,8 +212,8 @@ int main() {
         arr.push_back(r);
     }
 
-    tree.print();
-    tree.saveDotFile("bst_snapshot.dot");
+    //tree.print();
+    //tree.saveDotFile("bst_snapshot.dot");
 
     Bst tree2;
     tree2.insert(10);
@@ -162,5 +222,7 @@ int main() {
     tree2.insert(2);
     tree2.insert(7);
     tree2.insert(20);
+    tree2.print();
     cout << "Internal Path Length: " << tree2.ipl() << endl;
+
 }
