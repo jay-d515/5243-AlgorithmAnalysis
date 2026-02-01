@@ -28,7 +28,7 @@ public:
         if (outFile.is_open()) {
             outFile << dotContent;
             outFile.close();
-            cout << "\nDOT file saved: " << filename << endl;
+            cout << "DOT file saved: " << filename << endl << endl;
         } else {
             cerr << "Error: Could not open file " << filename << endl;
         }
@@ -70,14 +70,17 @@ private:
 class Bst {
     Node *root;
 
-    void _print(Node *subroot) {
-        if (!subroot) {
-            return;
-        } else {
-            _print(subroot->left);
-            cout << subroot->data << " ";
-            _print(subroot->right);
+    void _printSideways(Node *node, int depth){
+        if (!node) return;
+
+        _printSideways(node->right, depth + 1);
+
+        for (int i =0; i < depth; i++){
+            cout << "    ";
         }
+        cout << node->data << endl;
+
+        _printSideways(node->left, depth + 1);
     }
     void _insert(Node *&subroot, int x) {
         if (!subroot) { // if(root == nullptr)
@@ -158,7 +161,7 @@ public:
     Bst() { root = nullptr; }
     void insert(int x) { _insert(root, x); }
     bool search(int key) { return 0; }
-    void print() { _print(root); }
+    void printTree(){ _printSideways(root, 0); }
     void saveDotFile(const string &filename) {
         string dotContent = GraphvizBST::generateDot(root);
         GraphvizBST::saveDotFile(filename, dotContent);
@@ -205,7 +208,7 @@ int main() {
     Bst tree1;
     tree1.remove(10);
     cout << "Tree 1 after deletion (should be empty): \n";
-    tree1.print();
+    tree1.printTree();
     tree1.saveDotFile("trees/bst_case1.dot");
 
     // Case 2: Tree with one node, delete that node
@@ -213,13 +216,15 @@ int main() {
     // Insert a single node
     tree2.insert(10);
     cout << "Tree 2 before deletion: \n";
-    tree2.print();
+    tree2.printTree();
     // Snapshot of tree 2 before deletion
+    
     tree2.saveDotFile("trees/bst_case2_before.dot");
     // Delete the only node
     tree2.remove(10);
     cout << "\nTree 2 after deletion: \n";
-    tree2.print();
+    tree2.printTree();
+    
     // Snapshot of tree 2 after deletion
     tree2.saveDotFile("trees/bst_case2_after.dot");
 
@@ -230,14 +235,16 @@ int main() {
     tree3.insert(5);
     tree3.insert(15);
     cout << "Tree 3 before deletion: \n";
-    tree3.print();
+    tree3.printTree();
     // Snapshot of tree 3 before deletion
+    
     tree3.saveDotFile("trees/bst_case3_before.dot");
     // Delete a leaf node
     tree3.remove(5);
     cout << "Tree 3 after deletion: \n";
-    tree3.print();
+    tree3.printTree();
     // Snapshot of tree 3 after deletion
+    
     tree3.saveDotFile("trees/bst_case3_after.dot");
 
     // Case 4: Delete a node with one left child
@@ -247,14 +254,16 @@ int main() {
     tree4.insert(5);
     tree4.insert(2);
     cout << "Tree 4 before deletion: \n";
-    tree4.print();
+    tree4.printTree();
     // Snapshot of tree 4 before deletion
+    
     tree4.saveDotFile("trees/bst_case4_before.dot");
     // Delete a node with one left child
     tree4.remove(5);
     cout << "Tree 4 after deletion: ";
-    tree4.print();
+    tree4.printTree();
     // Snapshot of tree 4 after deletion
+    
     tree4.saveDotFile("trees/bst_case4_after.dot");
 
     // Case 5: Delete a node with one right child
@@ -264,14 +273,16 @@ int main() {
     tree5.insert(15);
     tree5.insert(20);
     cout << "Tree 5 before deletion: \n";
-    tree5.print();
+    tree5.printTree();
     // Snapshot of tree 5 before deletion
+    
     tree5.saveDotFile("trees/bst_case5_before.dot");
     // Delete a node with one right child
     tree5.remove(15);
     cout << "Tree 5 after deletion: \n";
-    tree5.print();
+    tree5.printTree();
     // Snapshot of tree 5 after deletion
+    
     tree5.saveDotFile("trees/bst_case5_after.dot");
 
     // Case 6: Delete a node with two children
@@ -283,14 +294,16 @@ int main() {
     tree6.insert(2);
     tree6.insert(7);
     cout << "Tree 6 before deletion: \n";
-    tree6.print();
+    tree6.printTree();
     // Snapshot of tree 6 before deletion
+    
     tree6.saveDotFile("trees/bst_case6_before.dot");
     // Delete a node with two children
     tree6.remove(5);
     cout << "Tree 6 after deletion: ";
-    tree6.print();
+    tree6.printTree();
     // Snapshot of tree 6 after deletion
+    
     tree6.saveDotFile("trees/bst_case6_after.dot");
 
     // Case 7: Delete the root node with two children
@@ -303,14 +316,16 @@ int main() {
     tree7.insert(7);
     tree7.insert(20);
     cout << "Tree 7 before deletion: \n";
-    tree7.print();
+    tree7.printTree();
     // Snapshot of tree 7 before deletion
+    
     tree7.saveDotFile("trees/bst_case7_before.dot");
     // Delete the root node
     tree7.remove(10);
     cout << "Tree 7 after deletion: \n";
-    tree7.print();
+    tree7.printTree();
     // Snapshot of tree 7 after deletion
+    
     tree7.saveDotFile("trees/bst_case7_after.dot");
 
     // Case 8: Sequential values (linked list BST)
@@ -320,14 +335,16 @@ int main() {
         tree8.insert(i);
     }
     cout << "Tree 8 before deletion: \n";
-    tree8.print();
+    tree8.printTree();
     // Snapshot of tree 8 before deletion
+    
     tree8.saveDotFile("trees/bst_case8_before.dot");
     // Delete a middle node
     tree8.remove(4);
     cout << "Tree 8 after deletion: \n";
-    tree8.print();
+    tree8.printTree();
     // Snapshot of tree 8 after deletion
+    
     tree8.saveDotFile("trees/bst_case8_after.dot");
 
     // Case 9: Delete non-existent value
@@ -337,14 +354,16 @@ int main() {
     tree9.insert(5);
     tree9.insert(15);
     cout << "Tree 9 before deletion: \n";
-    tree9.print();
+    tree9.printTree();
     // Snapshot of tree 9 before deletion
+    
     tree9.saveDotFile("trees/bst_case9_before.dot");
     // Attempt to delete a non-existent value
     tree9.remove(20);
     cout << "Tree 9 after deletion: \n";
-    tree9.print();
+    tree9.printTree();
     // Snapshot of tree 9 after deletion
+    
     tree9.saveDotFile("trees/bst_case9_after.dot");
 
     // Case 10: Random values
@@ -367,16 +386,18 @@ int main() {
         arr.push_back(r); 
     }
     cout << "Inserted " << arr.size() << " unique random values\n";
-    cout << "Tree 10 before deletion: \n";
-    tree10.print();
+    //cout << "Tree 10 before deletion: \n";
+    //tree10.print();
     // Snapshot of tree 10 before deletion
+    
     tree10.saveDotFile("trees/bst_case10_before.dot");
 
     for (int x : arr){
         tree10.remove(x);
     }
-    cout << "\nAll values deleted.\n";
+    //cout << "\nAll values deleted.\n";
+    //tree10.print();
     // Snapshot of tree 10 after all deletions
-    tree10.print();
+    
     tree10.saveDotFile("trees/bst_case10_after.dot");
 }
