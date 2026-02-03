@@ -100,6 +100,7 @@ class Bst {
     }
 
     Node* _findMin(Node *subroot){
+        // Find the node with the minimum value in the subtree
         while (subroot && subroot->left){
             subroot = subroot->left;
         }
