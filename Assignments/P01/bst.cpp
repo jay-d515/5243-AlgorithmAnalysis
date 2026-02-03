@@ -211,7 +211,7 @@ int main() {
     tree1.printTree();
     tree1.saveDotFile("trees/bst_case1.dot");
 
-    // Case 2: Tree with one node, delete that node
+    // Case 2: Delete a leaf node
     Bst tree2;
     // Insert a single node
     tree2.insert(10);
@@ -220,7 +220,7 @@ int main() {
     // Snapshot of tree 2 before deletion
     
     tree2.saveDotFile("trees/bst_case2_before.dot");
-    // Delete the only node
+    // Delete the leaf node
     tree2.remove(10);
     cout << "\nTree 2 after deletion: \n";
     tree2.printTree();
@@ -228,7 +228,7 @@ int main() {
     // Snapshot of tree 2 after deletion
     tree2.saveDotFile("trees/bst_case2_after.dot");
 
-    // Case 3: Delete a leaf node
+    // Case 3: Delete a child leaf node
     Bst tree3;
     // Insert nodes
     tree3.insert(10);
@@ -239,7 +239,7 @@ int main() {
     // Snapshot of tree 3 before deletion
     
     tree3.saveDotFile("trees/bst_case3_before.dot");
-    // Delete a leaf node
+    // Delete a node
     tree3.remove(5);
     cout << "Tree 3 after deletion: \n";
     tree3.printTree();
@@ -373,7 +373,7 @@ int main() {
     vector<int> arr;
     arr.push_back(root);
     tree10.insert(root);
-    for (int i = 1; i < 5000; i++){
+    for (int i = 1; i < 100; i++){
         // Generate unique random value
         int r = rand() % max;
         while (!unique_value(arr.data(), arr.size(), r)){
