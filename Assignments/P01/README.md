@@ -29,6 +29,7 @@
  I decided to use the inorder successor as the replacement value becasue it maintains the Binary Search Tree (BST) properties. A BST must satisfy:
 - Left subtree: all values < node's values
 - Right subtree: all values > node's values
+
 The inorder successor is the smallest node in the right subtree of the node being deleted, so replacing the deleted node's value with its inorder successor ensures the ordering of the BST remains valid. Additionally, using the inorder successor also simplified the deletion logic, and ensured I would not have to restructure large parts of the tree.
 ### Any challenges I faced while implementing deletion
 I would say my biggest challenge was figuring out what cases I wanted to test in my main function. It was hard to come up with ideas once I tested the cases you provided in the assignment description, so I utilized Google to help me come up with some additional test cases.
