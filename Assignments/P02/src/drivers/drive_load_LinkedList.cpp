@@ -1,4 +1,4 @@
-#include "bst.hpp"
+#include "linkedList.hpp"
 #include <iostream>
 #include <string>
 
@@ -6,14 +6,14 @@ using namespace std;
 
 int main(int argc, char** argv) {
     if (argc < 2) {
-        cout << "Usage: ./driver_bst ../work_files/workload_A_1000.json" << endl;
+        cout << "Usage: ./driver_ll work_files/workload_A_1000.json" << endl;
         return 1;
     }
 
-    Bst tree;
-    tree.runJobFile(argv[1]);
-
-    cout << tree.getCounters() << endl;
+    LinkedList ll;
+    ll.runJobFile(argv[1]);
+    
+    cout << ll.getCounters() << endl;
     
     // Extract workload name from filename (e.g., "A_1000" from "workload_A_1000.json")
     string fullpath = argv[1];
@@ -24,7 +24,7 @@ int main(int argc, char** argv) {
         filename = filename.substr(0, dot); // remove ".json"
     }
     
-    tree.save("results/results_bst_" + filename + ".json", true);
-
+    ll.save("results/results_ll_" + filename + ".json", true);
+    
     return 0;
 }

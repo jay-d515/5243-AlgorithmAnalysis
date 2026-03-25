@@ -11,19 +11,6 @@ using json = nlohmann::json;
 
 using namespace std;
 
-// struct Counters {
-//     long long comparisons = 0;
-//     long long structural_ops = 0;
-//     long long inserts = 0;
-//     long long deletes = 0;
-//     long long lookups = 0;
-//     long long resize_events = 0;
-
-//     ostream& operator <<(ostream& os, const Counter &o){
-//         return os << o.comparisons<<" "<<o.structural_ops<<" "<<o.inserts<<std::endl;
-//     }
-// };
-
 class Bst
 {
 protected:
@@ -39,7 +26,7 @@ protected:
     };
 
     Node *root;
-    Counters c{};
+    mutable Counters c{};
 
     // Recursive insert helper
     bool insert(Node *&node, int value)
@@ -73,20 +60,20 @@ protected:
     bool contains(Node *node, int value) const
     {
 
-        // comparison+
+        c.comparisons++;
         if (!node)
         {
 
             return false;
         }
 
-        // comparison++
+        c.comparisons++;
         if (value == node->data)
         {
 
             return true;
         }
-        // comparison++
+        c.comparisons++;
         if (value < node->data)
         {
 
@@ -99,10 +86,10 @@ protected:
     // Find smallest node in subtree
     Node *findMin(Node *node) const
     {
-        // lookup++
+        c.lookups++;
         while (node && node->left)
         {
-            // comparison++
+            c.comparisons++;
             node = node->left;
         }
         return node;
@@ -112,19 +99,19 @@ protected:
     bool erase(Node *&node, int value)
     {
 
-        // comparison++
+        c.comparisons++;
         if (!node)
         {
             return false;
         }
 
-        // comparison++
+        c.comparisons++;
         if (value < node->data)
         {
             return erase(node->left, value);
         }
 
-        // comparison++
+        c.comparisons++;
         if (value > node->data)
         {
             return erase(node->right, value);
@@ -135,8 +122,7 @@ protected:
         // Case 1: leaf node
         if (!node->left && !node->right)
         {
-            //
-            // structural_ops++
+            c.structural_ops++;
             delete node;
             node = nullptr;
             return true;
@@ -147,7 +133,7 @@ protected:
         {
             Node *temp = node;
             node = node->right;
-            // structural_ops++
+            c.structural_ops++;
             delete temp;
             return true;
         }
@@ -157,7 +143,7 @@ protected:
         {
             Node *temp = node;
             node = node->left;
-            // structural_ops++
+            c.structural_ops++;
             delete temp;
             return true;
         }
@@ -171,7 +157,7 @@ protected:
     // Postorder cleanup helper
     void clear(Node *node)
     {
-        // compare++
+        c.comparisons++;
         if (!node)
         {
             return;
@@ -179,7 +165,7 @@ protected:
 
         clear(node->left);
         clear(node->right);
-        // structural_ops++
+        c.structural_ops++;
         delete node;
     }
 
@@ -210,13 +196,18 @@ public:
     {
         std::ifstream f(fname);
         json j = json::parse(f);
-        // std::cout<<j<<std::endl;
 
-        // iterate over json object and print out each operation with value
-        // replace the print with actual operations, to process entire file.
+        // iterate over json object and process each operation
         for (auto &element : j)
         {
-            std::cout << element << '\n';
+            std::string op = element["op"];
+            if (op == "insert") {
+                insert(element["value"]);
+            } else if (op == "contains") {
+                contains(element["value"]);
+            } else if (op == "delete") {
+                erase(element["value"]);
+            }
         }
     }
 
@@ -230,13 +221,13 @@ public:
 
     bool contains(int value) const
     {
-        // lookup++
+        c.lookups++;
         return contains(root, value);
     }
 
     bool erase(int value)
     {
-        // delete++
+        c.deletes++;
         return erase(root, value);
     }
 
