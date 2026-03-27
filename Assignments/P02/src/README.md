@@ -2,7 +2,7 @@
 #### Jadyn Dangerfield
 
 ## Overview:
-In this program, I added Counter code to each data structure so I could save teh counts for a single run. Next, I generated each workload and ran each data structure with each workload saving the results to JSON files. Finally, I created heatmaps and bargraphs using my results in order to perform and analysis.
+In this program, I added Counter code to each data structure so I could save teh counts for a single run. Next, I generated each workload and ran each data structure with each workload saving the results to JSON files. Finally, I created heatmaps and bargraphs using my results in order to perform an analysis.
 
 ## Files
 #### Only including files relevant to this part of the assignment
@@ -53,6 +53,15 @@ This will create heatmaps and bar graphs based on the results of the benchmarks,
   `results_bst_A_1000.json`. etc.
 
 ## Analysis
+### Analysis by workload
+1. Workload A is random inserts followed by random lookups, with a fairly stable structure. SAS was best on comparisons at 234,881.75, ahead of BST at 786,087.5 and HT at 1,231,059.25, because once the ordered array is built it benefits from cheap binary-search-style lookup behavior described in the README. The tradeoff is maintenance cost: SAS paid 4,870,987.5 structural ops, while BST, HT, and LL were all only 8,582.25. LL failed badly here with 125,427,961.5 comparisons because random lookups force repeated linear scans.
+
+2. Workload B is the same pattern, but with sorted inserts first, which the README explicitly says stresses ordered structures differently and especially unbalanced BSTs. SAS was best again at 236,514.25 comparisons and also best on structural ops at 10.0. HT was second on comparisons at 1,248,675.25. BST collapsed here to 376,099,311.0 comparisons, which is the clearest sign in the whole run that sorted insertion order is causing the BST to become badly shaped. LL was also poor at 122,576,475.5 comparisons, but still much better than the BST under this adversarial insertion order.
+
+3. Workload C is the mixed workload: 50% contains, 25% insert, 25% delete, in random order. HT was the clear winner with only 12,052.25 comparisons. That fits the README explanation: hash tables keep lookups cheap unless collisions become severe, and this mixed workload favors fast membership tests. SAS was second at 198,992.5 comparisons, but it paid 1,324,880.0 structural ops, far above BST, HT, and LL at 8,937.75. So SAS still found values fairly well, but the cost of keeping the array ordered during insert and delete was very high. BST landed in the middle at 319,955.0, and LL was worst at 589,226.75 because repeated contains and deletes still require scanning.
+
+4. Workload D is read-heavy: insert n items, then do 5n lookups. SAS was best on comparisons at 750,245.75, ahead of BST at 2,684,252.75 and HT at 5,959,727.5. That matches the README’s point that read-heavy workloads reward structures with efficient lookup behavior. But again the tradeoff matters: SAS had 4,870,987.5 structural ops versus 8,582.25 for BST, HT, and LL. LL failed hardest with 603,019,252.25 comparisons because a read-heavy workload is exactly where linear search breaks down.
+
 ### Where Each Structure Exelled/Failed
 Sorted Array Set excelled most on comparison overall.
 - Workload A: 234,881.75 (best)
@@ -93,7 +102,10 @@ Workload Winners (Comparisons, lower is better)
 - Workload D: Sorted Array Set (750,245.75)
 
 Tradeoffs
-- Sorted Array Set: very low comparisons, but potentially huge structural maintenance cost depending on workload pattern.
-- Hash Table: strong and stable comparisons, especially best on C; not always the best on workloads A, B, and D.
-- Binary Search Tree: can be good when shape stays favorable, but can degrade drastically (workload B indicates a likely imbalance/adversarial order effect).
-- Linked List: simple structure, but poor scaling for search-heavy workloads; consistently the highest comparison cost.
+- Sorted Array Set: The best lookup-oriented structure for workloads A, B, and D with very low comparisons, but extremely high maintenance cost in workloads A, C, and D.
+- Hash Table: Strong and stable comparisons, especially best on workload C; however, it was not the best in heavily read-oriented workloads A, B, and D.
+- Binary Search Tree: Never the best overall, but was a decent middle-ground in workloads A and D, beating HT in A and D comparison and crushing LL. It can be good when shape stays favorable, but can degrade drastically which is seen in the insert-heavy workload B (indicates a likely imbalance/adversarial order effect).
+- Linked List: Did not win any workload. A simple structure, with poor scaling for search-heavy workloads; consistently the highest comparison cost.
+
+### Conclusion
+If you optimize for fewer comparisons, SAS won workloads A, B, D, while HT won workload C. If you care about avoiding internal maintenance work, SAS is less attractive in all except workload B, where it was unusually cheap structurally at 10.00. BST is acceptable is acceptable when insertion order does not wreck its shape, but workload B shows why balancing matters. LL is the weakest choice for these workloads becauase the cost of linear search is exposed by the lookup-heavy and mixed patterns.
