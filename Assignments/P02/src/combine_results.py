@@ -1,5 +1,6 @@
 import json
 import os
+from datetime import datetime
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -32,7 +33,19 @@ def load_results(results_dir):
 
     return pd.DataFrame(data)
 
-def create_comparison_charts(df):
+
+def find_latest_results_dir(base_results_dir='results'):
+    """Return the newest timestamped run directory, or the base directory if none exist."""
+    base_path = Path(base_results_dir)
+    run_dirs = [p for p in base_path.glob('run_*') if p.is_dir()]
+
+    if not run_dirs:
+        return base_path
+
+    # Directory names use run_YYYY-MM-DD_HH-MM-SS, so lexical max is the newest run.
+    return max(run_dirs, key=lambda p: p.name)
+
+def create_comparison_charts(df, output_dir, file_timestamp):
     """Create various comparison charts."""
 
     # Map data structures to readable names
@@ -65,7 +78,7 @@ def create_comparison_charts(df):
         fig.delaxes(axes[-1])
 
     plt.tight_layout()
-    plt.savefig('performance_comparison.png', dpi=300, bbox_inches='tight')
+    plt.savefig(output_dir / f'performance_comparison_{file_timestamp}.png', dpi=300, bbox_inches='tight')
     plt.show()
 
     # 2. Line chart: Performance scaling with size
@@ -86,7 +99,7 @@ def create_comparison_charts(df):
         fig.delaxes(axes[-1])
 
     plt.tight_layout()
-    plt.savefig('scaling_comparison.png', dpi=300, bbox_inches='tight')
+    plt.savefig(output_dir / f'scaling_comparison_{file_timestamp}.png', dpi=300, bbox_inches='tight')
     plt.show()
 
     # 3. Heatmap: Performance matrix
@@ -100,11 +113,11 @@ def create_comparison_charts(df):
         plt.ylabel('Data Structure')
         plt.xlabel('Workload and Size')
         plt.tight_layout()
-        plt.savefig(f'{metric}_heatmap.png', dpi=300, bbox_inches='tight')
+        plt.savefig(output_dir / f'{metric}_heatmap_{file_timestamp}.png', dpi=300, bbox_inches='tight')
         plt.show()
 
-def create_summary_table(df):
-    """Create a summary table of results."""
+def create_summary_table(df, output_dir):
+    """Create a summary table of results. """
     summary = df.groupby(['data_structure', 'workload']).agg({
         'comparisons': ['mean', 'std'],
         'inserts': ['mean', 'std'],
@@ -114,7 +127,7 @@ def create_summary_table(df):
     }).round(2)
 
     # Save to CSV
-    summary.to_csv('results_summary.csv')
+    summary.to_csv(output_dir / 'results_summary.csv')
 
     # Create a simpler JSON structure
     summary_dict = {}
@@ -134,7 +147,7 @@ def create_summary_table(df):
             'structural_ops_std': float(group['structural_ops'].std()),
         }
 
-    with open('results_summary.json', 'w') as f:
+    with open(output_dir / 'results_summary.json', 'w') as f:
         json.dump(summary_dict, f, indent=2)
 
     return summary
@@ -145,25 +158,32 @@ def main():
         print(f"Results directory '{results_dir}' not found!")
         return
 
+    analysis_dir = find_latest_results_dir(results_dir)
+    file_timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+    print(f"Using results from: {analysis_dir}")
+
     print("Loading results...")
-    df = load_results(results_dir)
+    df = load_results(analysis_dir)
+    if df.empty:
+        print(f"No result files found in '{analysis_dir}'")
+        return
     print(f"Loaded {len(df)} result files")
 
     print("Creating summary table...")
-    summary = create_summary_table(df)
-    print("Summary saved to results_summary.csv and results_summary.json")
+    summary = create_summary_table(df, analysis_dir)
+    print(f"Summary saved to {analysis_dir / 'results_summary.csv'} and {analysis_dir / 'results_summary.json'}")
 
     print("Creating charts...")
-    create_comparison_charts(df)
+    create_comparison_charts(df, analysis_dir, file_timestamp)
     print("Charts saved as PNG files")
 
     print("\nAnalysis complete!")
     print("Generated files:")
     print("- results_summary.csv: Summary statistics")
     print("- results_summary.json: Summary in JSON format")
-    print("- performance_comparison.png: Bar charts comparing performance")
-    print("- scaling_comparison.png: Line charts showing scaling")
-    print("- [metric]_heatmap.png: Heatmaps for each metric")
+    print(f"- performance_comparison_{file_timestamp}.png: Bar charts comparing performance")
+    print(f"- scaling_comparison_{file_timestamp}.png: Line charts showing scaling")
+    print(f"- [metric]_heatmap_{file_timestamp}.png: Heatmaps for each metric")
 
 if __name__ == "__main__":
     main()

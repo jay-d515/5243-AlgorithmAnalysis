@@ -32,7 +32,7 @@ for i in "${!structures[@]}"; do
         for size in "${sizes[@]}"; do
             workload_file="work_files/workload_${workload}_${size}.json"
             echo "Running $driver with $workload_file -> $RESULTS_DIR"
-            ./$driver "$workload_file" "$RESULTS_DIR" >/dev/null
+            ./drivers/$driver "$workload_file" "$RESULTS_DIR" >/dev/null
         done
     done
 done
