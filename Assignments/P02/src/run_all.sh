@@ -2,10 +2,12 @@
 
 set -e
 
-# Remove old outputs and ensure clean JSON results
-rm -f results_*_workload_*.json 2>/dev/null || true
-rm -rf results
-mkdir -p results
+set -e
+
+# Create timestamped results directory
+TIMESTAMP=$(date +%Y-%m-%d_%H-%M-%S)
+RESULTS_DIR="results/run_${TIMESTAMP}"
+mkdir -p "$RESULTS_DIR"
 
 # List of data structures
 structures=("bst" "ht" "ll" "sas")
@@ -29,15 +31,11 @@ for i in "${!structures[@]}"; do
         # Loop over each size
         for size in "${sizes[@]}"; do
             workload_file="work_files/workload_${workload}_${size}.json"
-            output_file="results/results_${struct}_${workload}_${size}.json"
-            
-            echo "Running $driver with $workload_file -> $output_file"
-            ./$driver "$workload_file" >/dev/null
-            if [ -f "results_${struct}_${workload}_${size}.json" ]; then
-                mv "results_${struct}_${workload}_${size}.json" "$output_file"
-            fi
+            echo "Running $driver with $workload_file -> $RESULTS_DIR"
+            ./$driver "$workload_file" "$RESULTS_DIR" >/dev/null
         done
     done
 done
 
-echo "All runs completed. JSON files in results/"
+echo "All runs completed. JSON files in $RESULTS_DIR/"
+echo "Run timestamp: $TIMESTAMP"

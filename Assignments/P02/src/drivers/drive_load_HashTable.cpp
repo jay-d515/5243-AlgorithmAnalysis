@@ -24,7 +24,16 @@ int main(int argc, char** argv) {
         filename = filename.substr(0, dot); // remove ".json"
     }
     
-    ht.save("results/results_ht_" + filename + ".json", true);
+        string output_dir = "results";
+        if (argc >= 3) {
+            output_dir = argv[2];
+            if (!output_dir.empty() && (output_dir.back() == '/' || output_dir.back() == '\\')) {
+                output_dir.pop_back();
+            }
+        }
+
+        string outpath = output_dir + "/results_ht_" + filename + ".json";
+        ht.save(outpath, true);
     
     return 0;
 }
