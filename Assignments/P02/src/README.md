@@ -19,10 +19,26 @@ In this program, I added Counter code to each data structure so I could save teh
 |   8   | `drive_load_HashTable.cpp`      | A driver for testing hash table implementation with a given workload.                                                             |
 |   9   | `drive_load_LinkedList.cpp`     | A driver for testing linked list implementation with a given workload.                                                            |
 |   10  | `drive_load_SortedArraySet.cpp` | A driver for testing sorted array implementation with a given workload.                                                           |
-|   11  | `generate_all_workloads.sh`     | Generatesall workloads for the experiments and saves them to the `work_files` directory.                                          |
+|   11  | `generate_all_workloads.sh`     | Generates all workloads for the experiments and saves them to the `work_files` directory.                                          |
 |   12  | `run_all.sh`                    | Runs all the drivers with all the workloads and sizes, and save the results in a timestamped directory.                           |
 |   13  | `combine_results.py`            | Combines the results from all the runs into a single DataFrame, and then create various charts and tables to compare performance. |
 
+## Changes
+#### bst.hpp, hashTable.hpp, linkedList.hpp, sortedArraySet.hpp
+- added Counter code to each data structure to I could save the counts for each run.
+- defined a function in each file called `runJobFile` that reads in a workload JSON file and replays every operation in order.
+
+#### drive_load_HashTable.cpp, drive_load_LinkedList.cpp, drive_load_SortedArraySet.cpp
+- created drivers for data structures: Hash Table, Linked List, and Sorted Array Set.
+
+#### generate_all_workloads.sh
+- created a script that generates all workloads needed for this assignment.
+
+#### run_all.sh
+- created a script that runs each data structure with each workload, and saves the results to JSON files.
+
+#### combine_results.py 
+- Created a python that combines the results from all the runs into a single DataFrame, and then create various charts and tables to compare performance.
 ## Instructions
 ### 1. Compile all drivers and workload generator
 from the `src/` directory run:

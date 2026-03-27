@@ -1,3 +1,5 @@
+// driver_bst.cpp
+// Driver program for testing the Bst implementation with a workload file.
 #include "bst.hpp"
 #include <iostream>
 #include <string>
@@ -31,7 +33,7 @@ int main(int argc, char** argv) {
     filename = filename.substr(9); // remove "workload_"
     size_t dot = filename.find_last_of('.');
     if (dot != string::npos) {
-        filename = filename.substr(0, dot); // remove ".json"
+        filename = filename.substr(0, dot);
     }
 
     // Compose output path

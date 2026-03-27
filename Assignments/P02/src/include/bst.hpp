@@ -191,7 +191,6 @@ public:
         return c;
     }
 
-    // example to read in json file and process it
     void runJobFile(std::string fname)
     {
         std::ifstream f(fname);
